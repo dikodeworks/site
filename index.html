@@ -139,6 +139,7 @@
 
     .brand .brand-name .dot {
       color: #c02020;
+      animation: blink-dot 1s ease-in-out infinite;
     }
 
     .nav-right {
@@ -578,7 +579,7 @@
     }
 
     #about-modal .modal-body {
-      padding: 24px 32px;
+      padding: 8px 32px 24px;
       max-height: 80vh;
       overflow-y: auto;
     }
@@ -655,6 +656,30 @@
     #contact-modal .contact-email:hover { color: var(--accent); }
 
     /* Match About/Why Us spacing and alignment inside the About modal */
+    #about-modal .modal-header {
+      border-bottom: none;
+    }
+
+    #about-modal .modal-title {
+      font-family: inherit;
+      font-size: inherit;
+      letter-spacing: inherit;
+    }
+
+    #about-modal .modal-title .brand-name {
+      font-size: 1.65rem;
+    }
+
+    #about-modal .modal-title .dot {
+      color: #c02020;
+      animation: blink-dot 1s ease-in-out infinite;
+    }
+
+    @keyframes blink-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+
     #about-modal .about-body > .about-section-title:last-of-type {
       margin-top: 28px;
     }
@@ -1110,7 +1135,7 @@
     <div class="modal-backdrop" id="about-backdrop"></div>
     <div class="modal-dialog">
       <div class="modal-header">
-        <span class="modal-title" data-i18n="modal.about">About</span>
+        <span class="modal-title"><span class="brand-name">DikodeWorks<span class="dot">.</span></span></span>
         <button type="button" class="modal-close" id="about-close" aria-label="Close">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>

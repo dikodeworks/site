@@ -1000,6 +1000,7 @@
       <div class="nav-right">
         <nav class="nav-links">
           <a href="#" class="nav-link-btn" id="about-open"><span data-i18n="hero.about">About</span></a>
+          <a href="#" class="nav-link-btn" id="ticket-open"><span data-i18n="hero.ticket">Ticket</span></a>
         </nav>
         <div class="lang-switch" id="lang-switch" role="group" aria-label="Language">
           <button type="button" class="lang-btn active" data-lang="en">EN</button>
@@ -1188,6 +1189,25 @@
     </div>
   </div>
 
+  <!-- MailGate v1.32 - Embed form Open Ticket -->
+  <div class="modal" id="ticket-modal" role="dialog" aria-modal="true" aria-label="Ticket">
+    <div class="modal-backdrop" id="ticket-backdrop"></div>
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <span class="modal-title" data-i18n="modal.ticket">Open Support Ticket</span>
+        <button type="button" class="modal-close" id="ticket-close" aria-label="Close">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <iframe id="mailgate-form"
+                data-src="https://auto.dikodeworks.my.id/webhook/mailgate-form"
+                title="Buka Tiket Support - DikodeWorks"
+                style="width:100%;max-width:680px;height:880px;border:0;display:block;margin:0 auto"></iframe>
+      </div>
+    </div>
+  </div>
+
   <footer>
     <div class="wrap footer-inner">
       <p>&copy; <span id="year"></span> DikodeWorks. <span data-i18n="footer.rights">All rights reserved.</span></p>
@@ -1203,6 +1223,7 @@
         'nav.schedule': 'Schedule',
         'hero.title': 'Resilient <span class="accent">tech talent</span> for secure infrastructure and digital ecosystems<span class="red">.</span>',
         'hero.about': 'About Us',
+        'hero.ticket': 'Ticket',
         'expertise.title': 'Our Expertise<span class="red">.</span>',
         'expertise.automation': 'Automation',
         'expertise.network': 'Network Infrastructure',
@@ -1213,6 +1234,7 @@
         'modal.training': 'Training',
         'modal.contact': 'Contact',
         'modal.about': 'About',
+        'modal.ticket': 'Open Support Ticket',
         'about.title': 'About',
         'about.desc': 'DikodeWorks is an founded by tech active enterprise practitioners. We specialize in Automation, Network Infrastructure, Systems Administration, DevOps, Software Engineering, and Cyber Security - with community collaboration and enterprise standards',
         'about.whyTitle': 'Why',
@@ -1237,6 +1259,7 @@
         'nav.schedule': 'Jadwal',
         'hero.title': 'Bakat <span class="accent">teknologi</span> yang tangguh untuk infrastruktur dan ekosistem digital yang aman<span class="red">.</span>',
         'hero.about': 'Tentang Kami',
+        'hero.ticket': 'Tiket',
         'expertise.title': 'Keahlian Kami<span class="red">.</span>',
         'expertise.automation': 'Automation',
         'expertise.network': 'Infrastruktur Jaringan',
@@ -1247,6 +1270,7 @@
         'modal.training': 'Pelatihan',
         'modal.contact': 'Kontak',
         'modal.about': 'Tentang',
+        'modal.ticket': 'Buka Tiket Support',
         'about.title': 'Tentang',
         'about.desc': 'DikodeWorks adalah penyedia pelatihan IT yang didirikan oleh praktisi enterprise aktif. Kami fokus pada Infrastruktur Jaringan, Administrasi Sistem, DevOps, Rekayasa Perangkat Lunak, dan Keamanan Siber — menggabungkan kolaborasi komunitas dengan standar enterprise.',
         'about.whyTitle': 'Mengapa',
@@ -1374,6 +1398,7 @@
     /* Wire up every modal from a single declaration. */
     [
       ['about-modal', 'about-open', 'about-close', 'about-backdrop'],
+      ['ticket-modal', 'ticket-open', 'ticket-close', 'ticket-backdrop'],
       ['contact-modal', 'contact-open', 'contact-close', 'contact-backdrop'],
       ['training-modal', 'training-open', 'training-close', 'training-backdrop'],
       ['jadwal-modal', 'jadwal-open', 'jadwal-close', 'jadwal-backdrop'],
@@ -1417,6 +1442,14 @@
       } else if (!e.shiftKey && document.activeElement === last) {
         e.preventDefault();
         first.focus();
+      }
+    });
+
+    /* MailGate: iframe height follows the form content (sent via postMessage). */
+    window.addEventListener('message', function (e) {
+      if (e.origin !== 'https://auto.dikodeworks.my.id') return;
+      if (e.data && e.data.type === 'mailgate-form-height') {
+        document.getElementById('mailgate-form').style.height = (e.data.height + 8) + 'px';
       }
     });
 

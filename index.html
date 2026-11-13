@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; form-action 'self'; frame-src https://docs.google.com; img-src 'self' data:" />
+  <meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; form-action 'self'; frame-src https://docs.google.com https://auto.dikodeworks.my.id; img-src 'self' data:" />
   <link rel="canonical" href="https://dikodeworks.id/" />
   <script>
     /* Clean URL (web only): /index.html → /. Skipped for file:// previews so
@@ -674,6 +674,74 @@
       animation: blink-dot 1s ease-in-out infinite;
     }
 
+    /* Ticket (MailGate) modal: fixed, no scrolling, form centered. */
+    #ticket-modal .modal-dialog {
+      width: min(640px, 100%);
+      max-height: calc(100vh - 40px);
+    }
+
+    #ticket-modal .modal-title .dot,
+    #ticket-modal .ticket-footer .dot {
+      color: #c02020;
+      animation: blink-dot 1s ease-in-out infinite;
+    }
+
+    #ticket-modal .ticket-body {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      flex: 0 0 auto;
+      overflow: hidden;
+      overscroll-behavior: contain;
+      padding: 0;
+    }
+
+    /* The wrapper takes the scaled size; the frame keeps its natural size and
+       is shrunk with transform so the whole form (incl. the submit button)
+       always fits inside the popup without scrolling. */
+    #ticket-modal .ticket-frame-wrap {
+      position: relative;
+      width: 640px;
+      max-width: 100%;
+      height: 585px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    #ticket-modal .ticket-body iframe {
+      position: absolute;
+      top: 0;
+      left: -32px;
+      display: block;
+      width: 704px;
+      height: 617px;
+      max-height: none;
+      border: 0;
+      transform-origin: top left;
+    }
+
+    #ticket-modal .ticket-footer {
+      flex-shrink: 0;
+      padding: 10px 20px;
+      border-top: 1px solid var(--line);
+      text-align: center;
+      font-family: 'Google Sans', 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    #ticket-modal .ticket-footer .brand-name {
+      font-family: 'Google Sans', 'Inter', sans-serif;
+      font-weight: 700;
+      color: #4a4a4a;
+    }
+
+    @media (max-width: 640px) {
+      #ticket-modal .modal-dialog { max-height: calc(100vh - 24px); }
+      #ticket-modal .ticket-body { padding: 0; }
+    }
+
     @keyframes blink-dot {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.2; }
@@ -999,8 +1067,8 @@
       </a>
       <div class="nav-right">
         <nav class="nav-links">
-          <a href="#" class="nav-link-btn" id="about-open"><span data-i18n="hero.about">About</span></a>
           <a href="#" class="nav-link-btn" id="ticket-open"><span data-i18n="hero.ticket">Ticket</span></a>
+          <a href="#" class="nav-link-btn" id="about-open"><span data-i18n="hero.about">About</span></a>
         </nav>
         <div class="lang-switch" id="lang-switch" role="group" aria-label="Language">
           <button type="button" class="lang-btn active" data-lang="en">EN</button>
@@ -1194,17 +1262,20 @@
     <div class="modal-backdrop" id="ticket-backdrop"></div>
     <div class="modal-dialog">
       <div class="modal-header">
-        <span class="modal-title" data-i18n="modal.ticket">Open Support Ticket</span>
+        <span class="modal-title"><span data-i18n="modal.ticket">Open Ticket</span><span class="dot">.</span></span>
         <button type="button" class="modal-close" id="ticket-close" aria-label="Close">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
-      <div class="modal-body">
-        <iframe id="mailgate-form"
-                data-src="https://auto.dikodeworks.my.id/webhook/mailgate-form"
-                title="Buka Tiket Support - DikodeWorks"
-                style="width:100%;max-width:680px;height:880px;border:0;display:block;margin:0 auto"></iframe>
+      <div class="modal-body ticket-body">
+        <div class="ticket-frame-wrap" id="mailgate-wrap">
+          <iframe id="mailgate-form"
+                  data-src="https://auto.dikodeworks.my.id/webhook/mailgate-form"
+                  title="Buka Tiket Support - DikodeWorks"
+                  scrolling="no"></iframe>
+        </div>
       </div>
+      <div class="ticket-footer">MailGate by <span class="brand-name">DikodeWorks<span class="dot">.</span></span></div>
     </div>
   </div>
 
@@ -1234,7 +1305,7 @@
         'modal.training': 'Training',
         'modal.contact': 'Contact',
         'modal.about': 'About',
-        'modal.ticket': 'Open Support Ticket',
+        'modal.ticket': 'Open Ticket',
         'about.title': 'About',
         'about.desc': 'DikodeWorks is an founded by tech active enterprise practitioners. We specialize in Automation, Network Infrastructure, Systems Administration, DevOps, Software Engineering, and Cyber Security - with community collaboration and enterprise standards',
         'about.whyTitle': 'Why',
@@ -1270,7 +1341,7 @@
         'modal.training': 'Pelatihan',
         'modal.contact': 'Kontak',
         'modal.about': 'Tentang',
-        'modal.ticket': 'Buka Tiket Support',
+        'modal.ticket': 'Buka Tiket',
         'about.title': 'Tentang',
         'about.desc': 'DikodeWorks adalah penyedia pelatihan IT yang didirikan oleh praktisi enterprise aktif. Kami fokus pada Infrastruktur Jaringan, Administrasi Sistem, DevOps, Rekayasa Perangkat Lunak, dan Keamanan Siber — menggabungkan kolaborasi komunitas dengan standar enterprise.',
         'about.whyTitle': 'Mengapa',
@@ -1446,12 +1517,57 @@
     });
 
     /* MailGate: iframe height follows the form content (sent via postMessage). */
+    /* The popup itself never scrolls: the frame is capped to the space left
+       between the header and the footer inside the viewport. */
+    /* The form is always rendered at its natural desktop size (704 px wide;
+       it only reports its height after submit) and scaled down
+       as one piece to fit both the popup's width and the screen height. */
+    const MAILGATE_FORM_W = 704;
+    /* Embedded, the form hides its own title, so the page is ~617 px tall:
+       card 4..580 px, then its own "MailGate by DikodeWorks" line. It can't be
+       styled cross-origin, so the visible area is cropped 4 px below the card
+       (same gap as top/left/right). The frame is kept at the content height so
+       the scrollHeight it reports after submit tracks the real content. */
+    const MAILGATE_FOOT_CROP = 32;
+    /* The card sits 36 px in from each side of the 704 px page and 4 px from
+       the top; crop the sides to leave the same 4 px gap on every edge. */
+    const MAILGATE_SIDE_CROP = 32;
+    let mailgateFormHeight = 617;
+    function fitMailgateForm() {
+      const frame = document.getElementById('mailgate-form');
+      const wrap = document.getElementById('mailgate-wrap');
+      const modal = document.getElementById('ticket-modal');
+      if (!frame || !wrap || !modal) return;
+      const dialog = modal.querySelector('.modal-dialog');
+      const header = modal.querySelector('.modal-header');
+      const footer = modal.querySelector('.ticket-footer');
+      const chrome = (header ? header.offsetHeight : 0) + (footer ? footer.offsetHeight : 0);
+      const dialogMax = parseFloat(getComputedStyle(dialog).maxHeight) || window.innerHeight - 40;
+      const availH = Math.max(200, dialogMax - chrome);
+      const availW = dialog.clientWidth || MAILGATE_FORM_W;
+      const w = MAILGATE_FORM_W;
+      const h = mailgateFormHeight;
+      const visibleH = h - MAILGATE_FOOT_CROP;
+      const visibleW = w - 2 * MAILGATE_SIDE_CROP;
+      const scale = Math.min(1, availW / visibleW, availH / visibleH);
+      frame.style.width = w + 'px';
+      frame.style.height = h + 'px';
+      frame.style.transform = scale < 1 ? 'scale(' + scale + ')' : 'none';
+      frame.style.left = (-MAILGATE_SIDE_CROP * scale) + 'px';
+      wrap.style.width = Math.floor(visibleW * scale) + 'px';
+      wrap.style.height = Math.ceil(visibleH * scale) + 'px';
+    }
     window.addEventListener('message', function (e) {
       if (e.origin !== 'https://auto.dikodeworks.my.id') return;
       if (e.data && e.data.type === 'mailgate-form-height') {
-        document.getElementById('mailgate-form').style.height = (e.data.height + 8) + 'px';
+        /* After submit the form grows (result message); never shrink below
+           the measured size, since scrollHeight is at least the frame height. */
+        mailgateFormHeight = Math.max(617, e.data.height);
+        fitMailgateForm();
       }
     });
+    window.addEventListener('resize', fitMailgateForm);
+    document.getElementById('ticket-open').addEventListener('click', () => requestAnimationFrame(fitMailgateForm));
 
     const navToggle = document.getElementById('nav-toggle');
     const nav = document.querySelector('.nav');

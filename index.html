@@ -703,7 +703,8 @@
       position: relative;
       width: 640px;
       max-width: 100%;
-      height: 585px;
+      height: 699px;
+      background: var(--white);
       margin: 0 auto;
       overflow: hidden;
     }
@@ -714,11 +715,24 @@
       left: -32px;
       display: block;
       width: 704px;
-      height: 617px;
+      height: 731px;
       max-height: none;
       border: 0;
       transform-origin: top left;
     }
+
+    /* Blank cover over the reserved space under the card; hides the form's own
+       "MailGate by DikodeWorks" line until a result message is shown. */
+    #ticket-modal .ticket-foot-mask {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 585px;
+      bottom: 0;
+      background: var(--white);
+    }
+
+    #ticket-modal .ticket-foot-mask.is-hidden { display: none; }
 
     #ticket-modal .ticket-footer {
       flex-shrink: 0;
@@ -1273,6 +1287,7 @@
                   data-src="https://auto.dikodeworks.my.id/webhook/mailgate-form"
                   title="Buka Tiket Support - DikodeWorks"
                   scrolling="no"></iframe>
+          <div class="ticket-foot-mask" id="mailgate-mask" aria-hidden="true"></div>
         </div>
       </div>
       <div class="ticket-footer">MailGate by <span class="brand-name">DikodeWorks<span class="dot">.</span></span></div>
@@ -1529,10 +1544,17 @@
        (same gap as top/left/right). The frame is kept at the content height so
        the scrollHeight it reports after submit tracks the real content. */
     const MAILGATE_FOOT_CROP = 32;
+    /* Space kept under the card for the result message shown after submit
+       (measured: +114 px, about two "Kirim tiket" buttons). The frame is made
+       this much taller up front so the message always fits. */
+    const MAILGATE_BASE_H = 617;
+    const MAILGATE_RESULT_SPACE = 114;
+    const MAILGATE_MIN_H = MAILGATE_BASE_H + MAILGATE_RESULT_SPACE;
+    let mailgateLoadedAt = 0;
     /* The card sits 36 px in from each side of the 704 px page and 4 px from
        the top; crop the sides to leave the same 4 px gap on every edge. */
     const MAILGATE_SIDE_CROP = 32;
-    let mailgateFormHeight = 617;
+    let mailgateFormHeight = MAILGATE_MIN_H;
     function fitMailgateForm() {
       const frame = document.getElementById('mailgate-form');
       const wrap = document.getElementById('mailgate-wrap');
@@ -1556,17 +1578,34 @@
       frame.style.left = (-MAILGATE_SIDE_CROP * scale) + 'px';
       wrap.style.width = Math.floor(visibleW * scale) + 'px';
       wrap.style.height = Math.ceil(visibleH * scale) + 'px';
+      const mask = document.getElementById('mailgate-mask');
+      if (mask) mask.style.top = Math.floor((MAILGATE_BASE_H - MAILGATE_FOOT_CROP) * scale) + 'px';
     }
     window.addEventListener('message', function (e) {
-      if (e.origin !== 'https://auto.dikodeworks.my.id') return;
-      if (e.data && e.data.type === 'mailgate-form-height') {
+      /* n8n serves the form sandboxed, so its messages arrive with origin
+         "null". Trust only messages that come from our own form iframe. */
+      const mailgateFrame = document.getElementById('mailgate-form');
+      if (!mailgateFrame || e.source !== mailgateFrame.contentWindow) return;
+      if (e.origin !== 'https://auto.dikodeworks.my.id' && e.origin !== 'null') return;
+      if (e.data && e.data.type === 'mailgate-form-height' && Number.isFinite(e.data.height)) {
         /* After submit the form grows (result message); never shrink below
            the measured size, since scrollHeight is at least the frame height. */
-        mailgateFormHeight = Math.max(617, e.data.height);
+        mailgateFormHeight = Math.max(MAILGATE_MIN_H, e.data.height);
+        /* The form also reports on load; a later report means a result
+           message is showing, so uncover the reserved space. */
+        if (mailgateLoadedAt && Date.now() - mailgateLoadedAt > 800) {
+          const mask = document.getElementById('mailgate-mask');
+          if (mask) mask.classList.add('is-hidden');
+        }
         fitMailgateForm();
       }
     });
     window.addEventListener('resize', fitMailgateForm);
+    document.getElementById('mailgate-form').addEventListener('load', () => {
+      mailgateLoadedAt = Date.now();
+      const mask = document.getElementById('mailgate-mask');
+      if (mask) mask.classList.remove('is-hidden');
+    });
     document.getElementById('ticket-open').addEventListener('click', () => requestAnimationFrame(fitMailgateForm));
 
     const navToggle = document.getElementById('nav-toggle');
